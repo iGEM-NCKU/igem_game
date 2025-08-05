@@ -8,6 +8,12 @@ WIDTH, HEIGHT = 800, 600
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Simple Tower Defense")
 
+TOWER_TYPES = {
+    "Fast": {"cooldown": 30, "range": 120},
+    "Sniper": {"cooldown": 90, "range": 200},
+    "Normal": {"cooldown": 60, "range": 150}
+}
+
 # Colors
 WHITE = (255, 255, 255)
 RED = (255, 50, 50)
@@ -97,7 +103,7 @@ class Bullet:
 
     def setBulletDamage(self, damage):
         self.damage = damage
-def draw_window(win, enemies, towers, bullets):
+def draw_window(win, enemies, towers, bullets, selected_tower_type):
     win.fill((200, 200, 200))
     for p in PATH:
         pygame.draw.circle(win, BLACK, p, 5)
@@ -107,12 +113,27 @@ def draw_window(win, enemies, towers, bullets):
         t.draw(win)
     for b in bullets:
         b.draw(win)
+    draw_ui(win, selected_tower_type)
     pygame.display.update()
+
+def draw_ui(win, selected_tower_type):
+    y = HEIGHT - 50
+    x = 10
+    for name in TOWER_TYPES:
+        rect = pygame.Rect(x, y, 100, 40)
+        color = GREEN if selected_tower_type == name else WHITE
+        pygame.draw.rect(win, color, rect)
+        pygame.draw.rect(win, BLACK, rect, 2)
+        font = pygame.font.SysFont(None, 24)
+        text = font.render(name, True, BLACK)
+        win.blit(text, (x + 10, y + 10))
+        x += 110
 
 def main():
     run = True
     clock = pygame.time.Clock()
 
+    selected_tower_type = "Normal"
     enemies = []
     towers = [Tower(300, 400), Tower(500, 300)]
     bullets = []
@@ -147,8 +168,8 @@ def main():
         bullets = new_bullets
 
         # Draw everything
-        draw_window(WIN, enemies, towers, bullets)
-
+        draw_window(WIN, enemies, towers, bullets,selected_tower_type)
+        
     pygame.quit()
 
 if __name__ == "__main__":

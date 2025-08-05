@@ -71,6 +71,8 @@ class Tower:
                 bullets.append(Bullet(self.x, self.y, e))
                 self.timer = self.cooldown
                 break
+    def setTowerCooldown(self, cooldownSec):
+        self.cooldown = cooldownSec
 
 class Bullet:
     def __init__(self, x, y, target):
@@ -93,6 +95,8 @@ class Bullet:
     def draw(self, win):
         pygame.draw.circle(win, BLACK, (int(self.x), int(self.y)), 5)
 
+    def setBulletDamage(self, damage):
+        self.damage = damage
 def draw_window(win, enemies, towers, bullets):
     win.fill((200, 200, 200))
     for p in PATH:

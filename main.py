@@ -1,110 +1,15 @@
 import pygame
-import math
-import random
+from Tower import Tower
+from Enemy import Enemy
 
-# Initialize
-WIDTH, HEIGHT = 800, 600
+from config import FPS, HEIGHT, WIDTH, TOWER_TYPES, WHITE, GREEN, BLACK, PATH
+
 pygame.init()
 background_image = pygame.transform.scale(pygame.image.load("src/background.jpg"),(WIDTH,HEIGHT))
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Simple Tower Defense")
 
-TOWER_TYPES = {
-    "Fast": {"cooldown": 30, "range": 120},
-    "Sniper": {"cooldown": 90, "range": 200},
-    "Normal": {"cooldown": 60, "range": 150}
-}
-
-# Colors
-WHITE = (255, 255, 255)
-RED = (255, 50, 50)
-GREEN = (50, 255, 50)
-BLUE = (50, 50, 255)
-BLACK = (0, 0, 0)
-
-# Clock
-FPS = 60
-
-# Enemy Path
-PATH = [(0, 300), (200, 300), (200, 500), (600, 500), (600, 100), (800, 100)]
-
-class Enemy:
-    def __init__(self):
-        self.path = PATH
-        self.pos_index = 0
-        self.x, self.y = self.path[0]
-        self.speed = 1.5
-        self.health = 100
-        self.max_health = 100
-
-    def move(self):
-        if self.pos_index + 1 >= len(self.path):
-            return False  # reached end
-        target_x, target_y = self.path[self.pos_index + 1]
-        dx, dy = target_x - self.x, target_y - self.y
-        dist = math.hypot(dx, dy)
-        if dist < self.speed:
-            self.pos_index += 1
-        else:
-            self.x += dx / dist * self.speed
-            self.y += dy / dist * self.speed
-        return True
-
-    def draw(self, win):
-        pygame.draw.circle(win, RED, (int(self.x), int(self.y)), 10)
-        # Health bar
-        pygame.draw.rect(win, RED, (self.x - 15, self.y - 20, 30, 5))
-        pygame.draw.rect(win, GREEN, (self.x - 15, self.y - 20, 30 * self.health / self.max_health, 5))
-
-class Tower:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.range = 150
-        self.cooldown = 60  # frames between shots
-        self.timer = 0
-
-    def draw(self, win):
-        pygame.draw.circle(win, BLUE, (self.x, self.y), 20)
-        pygame.draw.circle(win, WHITE, (self.x, self.y), self.range, 1)
-
-    def shoot(self, enemies, bullets):
-        if self.timer > 0:
-            self.timer -= 1
-            return
-        for e in enemies:
-            dist = math.hypot(e.x - self.x, e.y - self.y)
-            if dist <= self.range:
-                bullets.append(Bullet(self.x, self.y, e))
-                self.timer = self.cooldown
-                break
-    def setTowerCooldown(self, cooldownSec):
-        self.cooldown = cooldownSec
-
-class Bullet:
-    def __init__(self, x, y, target):
-        self.x = x
-        self.y = y
-        self.target = target
-        self.speed = 6
-        self.damage = 20
-
-    def move(self):
-        dx, dy = self.target.x - self.x, self.target.y - self.y
-        dist = math.hypot(dx, dy)
-        if dist < self.speed or self.target.health <= 0:
-            self.target.health -= self.damage
-            return False  # bullet disappears
-        self.x += dx / dist * self.speed
-        self.y += dy / dist * self.speed
-        return True
-
-    def draw(self, win):
-        pygame.draw.circle(win, BLACK, (int(self.x), int(self.y)), 5)
-
-    def setBulletDamage(self, damage):
-        self.damage = damage
-def draw_window(win, enemies, towers, bullets, selected_tower_type):
+def draw_window(win, enemies, towers, bullets, selected_tower_type,MONEY,escaped_count):
     win.fill((200, 200, 200))
     for p in PATH:
         pygame.draw.circle(win, BLACK, p, 5)
@@ -115,6 +20,17 @@ def draw_window(win, enemies, towers, bullets, selected_tower_type):
     for b in bullets:
         b.draw(win)
     draw_ui(win, selected_tower_type)
+
+    #money
+    money_font = pygame.font.SysFont(None, 30)
+    money_text = money_font.render(f"Money: ${MONEY}", True, BLACK)
+    win.blit(money_text, (WIDTH - 150, HEIGHT - 40))
+
+    #escaped
+    escaped_font = pygame.font.SysFont(None, 30)
+    escaped_text = escaped_font.render(f"Escaped_bectaria: {escaped_count}", True, BLACK)
+    win.blit(escaped_text, (WIDTH-250, HEIGHT - 60))
+
     pygame.display.update()
 
 def draw_ui(win, selected_tower_type):
@@ -187,6 +103,13 @@ def main_menu():
                     pygame.quit()
                     exit()
 def main():
+
+    #money
+    MONEY = 100
+
+    #escaped
+    escaped_count = 0
+
     run = True
     building_tower= False
     clock = pygame.time.Clock()
@@ -211,15 +134,19 @@ def main():
                 for name in TOWER_TYPES:
                     rect = pygame.Rect(x, y, 100, 40)
                     if rect.collidepoint((mx, my)):
+                        print(mx,my)
                         selected_tower_type = name
-                        UI_select_time = pygame.time.get_ticks() + 1500  # 2 sec
+                        UI_select_time = pygame.time.get_ticks() + 1500  # 1.5sec
                         building_tower = True
                         break
                     x += 110
-                    #building_tower
-                    if building_tower:
+
+                #building_tower
+                if building_tower and selected_tower_type != "":
                         tower_info = TOWER_TYPES[selected_tower_type]
                         print("build")
+
+                        building_tower = False
         # Check time ticks
         if UI_select_time and pygame.time.get_ticks() > UI_select_time:
             selected_tower_type = ""
@@ -227,12 +154,23 @@ def main():
 
         # Spawn enemies
         spawn_timer += 1
-        if spawn_timer > 120:  # spawn every 2 seconds
+        if spawn_timer > 12:  # spawn every 2 seconds
             enemies.append(Enemy())
             spawn_timer = 0
 
         # Update enemies
-        enemies = [e for e in enemies if e.move() and e.health > 0]
+        alive_enemies = []
+        for e in enemies:
+            alive = e.move()
+            if not alive:
+                if e.health > 0:
+                    escaped_count += 1
+            elif e.health > 0:
+                alive_enemies.append(e)
+            else:
+                MONEY += 1
+        enemies = alive_enemies
+
 
         # Towers shoot
         for tower in towers:
@@ -246,10 +184,10 @@ def main():
         bullets = new_bullets
 
         # Draw everything
-        draw_window(WIN, enemies, towers, bullets,selected_tower_type)
+        draw_window(WIN, enemies, towers, bullets,selected_tower_type,MONEY,escaped_count)
         
     pygame.quit()
 
 if __name__ == "__main__":
-    #main_menu()
+    main_menu()
     main()

@@ -3,8 +3,9 @@ import math
 import random
 
 # Initialize
-pygame.init()
 WIDTH, HEIGHT = 800, 600
+pygame.init()
+background_image = pygame.transform.scale(pygame.image.load("src/background.jpg"),(WIDTH,HEIGHT))
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Simple Tower Defense")
 
@@ -119,9 +120,17 @@ def draw_window(win, enemies, towers, bullets, selected_tower_type):
 def draw_ui(win, selected_tower_type):
     y = HEIGHT - 50
     x = 10
+    mouse_pos = pygame.mouse.get_pos()
+
     for name in TOWER_TYPES:
         rect = pygame.Rect(x, y, 100, 40)
-        color = GREEN if selected_tower_type == name else WHITE
+        if rect.collidepoint(mouse_pos):
+            color = (144, 255, 144)
+        if selected_tower_type == name:
+            color = GREEN  
+        if not rect.collidepoint(mouse_pos) and selected_tower_type != name:
+            color = WHITE  
+
         pygame.draw.rect(win, color, rect)
         pygame.draw.rect(win, BLACK, rect, 2)
         font = pygame.font.SysFont(None, 24)
@@ -139,7 +148,7 @@ def main_menu():
 
     while menu_run:
         clock.tick(FPS)
-        WIN.fill((180,180,200))
+        WIN.blit(background_image,(0,0))
 
         title = font.render("NCKU_iGEM_Game",True, BLACK)
         WIN.blit(title, (WIDTH // 2 - title.get_width() // 2, HEIGHT // 2 - 100))
@@ -179,6 +188,7 @@ def main_menu():
                     exit()
 def main():
     run = True
+    building_tower= False
     clock = pygame.time.Clock()
 
     selected_tower_type = "Normal"
@@ -186,14 +196,34 @@ def main():
     towers = [Tower(300, 400), Tower(500, 300)]
     bullets = []
     spawn_timer = 0
-
+    UI_select_time = None
     while run:
         clock.tick(FPS)
 
-        # Quit check
+        #UI check    
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mx, my = pygame.mouse.get_pos()
+                x = 10
+                y = HEIGHT - 50
+                for name in TOWER_TYPES:
+                    rect = pygame.Rect(x, y, 100, 40)
+                    if rect.collidepoint((mx, my)):
+                        selected_tower_type = name
+                        UI_select_time = pygame.time.get_ticks() + 1500  # 2 sec
+                        building_tower = True
+                        break
+                    x += 110
+                    #building_tower
+                    if building_tower:
+                        tower_info = TOWER_TYPES[selected_tower_type]
+                        print("build")
+        # Check time ticks
+        if UI_select_time and pygame.time.get_ticks() > UI_select_time:
+            selected_tower_type = ""
+            UI_select_time = None
 
         # Spawn enemies
         spawn_timer += 1
@@ -221,5 +251,5 @@ def main():
     pygame.quit()
 
 if __name__ == "__main__":
-    main_menu()
+    #main_menu()
     main()

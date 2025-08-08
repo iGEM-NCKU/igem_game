@@ -1,15 +1,17 @@
 import pygame
+from menu import main_menu
 from Tower import Tower
 from Enemy import Enemy
 
 from config import FPS, HEIGHT, WIDTH, TOWER_TYPES, WHITE, GREEN, BLACK, PATH
 
 pygame.init()
-background_image = pygame.transform.scale(pygame.image.load("src/background.jpg"),(WIDTH,HEIGHT))
+
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+
 pygame.display.set_caption("Simple Tower Defense")
 
-def draw_window(win, enemies, towers, bullets, selected_tower_type,MONEY,escaped_count):
+def draw_window(win, enemies, towers, bullets, selected_tower_type,MONEY,escaped_count,holding_tower):
     win.fill((200, 200, 200))
     for p in PATH:
         pygame.draw.circle(win, BLACK, p, 5)
@@ -30,6 +32,10 @@ def draw_window(win, enemies, towers, bullets, selected_tower_type,MONEY,escaped
     escaped_font = pygame.font.SysFont(None, 30)
     escaped_text = escaped_font.render(f"Escaped_bectaria: {escaped_count}", True, BLACK)
     win.blit(escaped_text, (WIDTH-250, HEIGHT - 60))
+    
+    #holding
+    if holding_tower:
+        holding_tower.draw(WIN) 
 
     pygame.display.update()
 
@@ -54,54 +60,6 @@ def draw_ui(win, selected_tower_type):
         win.blit(text, (x + 10, y + 10))
         x += 110
 
-def main_menu():
-    menu_run = True
-    clock = pygame.time.Clock()
-    font = pygame.font.SysFont(None,48)
-    button_font = pygame.font.SysFont(None,36)
-    button_rect = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2, 200, 50)
-    quit_button_rect = pygame.Rect(WIDTH // 2 - 100, HEIGHT // 2 +100, 200, 50)
-
-    while menu_run:
-        clock.tick(FPS)
-        WIN.blit(background_image,(0,0))
-
-        title = font.render("NCKU_iGEM_Game",True, BLACK)
-        WIN.blit(title, (WIDTH // 2 - title.get_width() // 2, HEIGHT // 2 - 100))
-
-        mouse_pos = pygame.mouse.get_pos()
-
-        if button_rect.collidepoint(mouse_pos):
-            button_color = GREEN
-        else:
-            button_color = WHITE
-        if quit_button_rect.collidepoint(mouse_pos):
-            quit_button_color = GREEN
-        else:
-            quit_button_color = WHITE
-        # Draw start button
-        pygame.draw.rect(WIN, button_color, button_rect)
-        pygame.draw.rect(WIN, BLACK, button_rect, 5)
-        button_text = button_font.render("Start Game", True, BLACK)
-        WIN.blit(button_text, (button_rect.x + 40, button_rect.y + 10))
-       
-        # Draw quit button
-        pygame.draw.rect(WIN, quit_button_color, quit_button_rect)
-        pygame.draw.rect(WIN, BLACK, quit_button_rect, 5)
-        quit_button_text = button_font.render("Quit", True, BLACK)
-        WIN.blit(quit_button_text,(quit_button_rect.x + 70, quit_button_rect.y +10))
-        pygame.display.update()
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if button_rect.collidepoint(event.pos):
-                    menu_run = False
-                elif quit_button_rect.collidepoint(event.pos):
-                    pygame.quit()
-                    exit()
 def main():
 
     #money
@@ -120,8 +78,18 @@ def main():
     bullets = []
     spawn_timer = 0
     UI_select_time = None
+    holding_tower = None
+
     while run:
         clock.tick(FPS)
+
+    #building_tower
+        if building_tower and selected_tower_type != "":
+            tower_info = TOWER_TYPES[selected_tower_type]
+            print("build")
+            holding_tower = Tower(mx, my)
+            holding_tower.cooldown = tower_info["cooldown"]
+            holding_tower.range = tower_info["range"]
 
         #UI check    
         for event in pygame.event.get():
@@ -137,21 +105,23 @@ def main():
                         print(mx,my)
                         selected_tower_type = name
                         UI_select_time = pygame.time.get_ticks() + 1500  # 1.5sec
+                        holding_tower = Tower(mx, my)
                         building_tower = True
                         break
                     x += 110
-
-                #building_tower
-                if building_tower and selected_tower_type != "":
-                        tower_info = TOWER_TYPES[selected_tower_type]
-                        print("build")
-
+                    if holding_tower != None:
+                        towers.append(Tower(mx, my))
+                        holding_tower = None
+                        selected_tower_type = None
                         building_tower = False
+
         # Check time ticks
         if UI_select_time and pygame.time.get_ticks() > UI_select_time:
             selected_tower_type = ""
             UI_select_time = None
-
+        # holding_tower
+        if holding_tower != None:
+            holding_tower.x, holding_tower.y = pygame.mouse.get_pos()
         # Spawn enemies
         spawn_timer += 1
         if spawn_timer > 12:  # spawn every 2 seconds
@@ -184,10 +154,10 @@ def main():
         bullets = new_bullets
 
         # Draw everything
-        draw_window(WIN, enemies, towers, bullets,selected_tower_type,MONEY,escaped_count)
+        draw_window(WIN, enemies, towers, bullets,selected_tower_type,MONEY,escaped_count,holding_tower)
         
     pygame.quit()
 
 if __name__ == "__main__":
-    main_menu()
+    main_menu(WIN)
     main()

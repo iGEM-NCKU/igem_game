@@ -22,3 +22,7 @@ FPS = 60
 
 # Enemy Path
 PATH = [(0, 300), (200, 300), (200, 500), (600, 500), (600, 100), (800, 100)]
+
+#path
+
+BACKGROUND_IMAGE = "src/background.jpg"

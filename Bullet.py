@@ -7,8 +7,8 @@ class Bullet:
         self.x = x
         self.y = y
         self.target = target
-        self.speed = 60
-        self.damage = 2
+        self.speed = 6
+        self.damage = 20
 
     def move(self):
         dx, dy = self.target.x - self.x, self.target.y - self.y

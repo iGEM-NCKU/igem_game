@@ -7,7 +7,7 @@ class Tower:
         self.x = x
         self.y = y
         self.range = 150
-        self.cooldown = 6 # frames between shots
+        self.cooldown = 60 # frames between shots
         self.timer = 0
 
     def draw(self, win):

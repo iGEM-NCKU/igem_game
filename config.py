@@ -1,13 +1,25 @@
 
 # Initialize
 WIDTH, HEIGHT = 800, 600
-
+MAP_WIDTH, MAP_HEIGHT = 800, 550
 # Tower type
 TOWER_TYPES = {
     "Fast": {"cooldown": 30, "range": 120},
     "Sniper": {"cooldown": 90, "range": 200},
     "Normal": {"cooldown": 60, "range": 150}
 }
+
+BIOFILM_TYPES = {
+    "TIER1": {"cooldown": 30, "range": 120},
+    "TIER2": {"cooldown": 90, "range": 200},
+    "TIER3": {"cooldown": 60, "range": 150}
+}
+
+
+# STAGE
+STAGE1 = 10
+STAGE2 = 5
+STAGE3 = 1
 
 # Colors
 WHITE = (255, 255, 255)

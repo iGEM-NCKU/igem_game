@@ -1,9 +1,11 @@
 import pygame
+import random
 from menu import main_menu
 from Tower import Tower
 from Enemy import Enemy
+from Biofilm import Biofilm
 
-from config import FPS, HEIGHT, WIDTH, TOWER_TYPES, WHITE, GREEN, BLACK, PATH
+from config import FPS, HEIGHT, WIDTH, TOWER_TYPES, WHITE, GREEN, BLACK, PATH, STAGE1, MAP_WIDTH, MAP_HEIGHT
 
 pygame.init()
 
@@ -11,7 +13,7 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 
 pygame.display.set_caption("Simple Tower Defense")
 
-def draw_window(win, enemies, towers, bullets, selected_tower_type,MONEY,escaped_count,holding_tower):
+def draw_window(win, enemies, towers, bullets, selected_tower_type,MONEY,escaped_count,holding_tower,biofilm):
     win.fill((200, 200, 200))
     for p in PATH:
         pygame.draw.circle(win, BLACK, p, 5)
@@ -21,6 +23,8 @@ def draw_window(win, enemies, towers, bullets, selected_tower_type,MONEY,escaped
         t.draw(win)
     for b in bullets:
         b.draw(win)
+    for bi in biofilm:
+        bi.draw(win)
     draw_ui(win, selected_tower_type)
 
     #money
@@ -35,7 +39,7 @@ def draw_window(win, enemies, towers, bullets, selected_tower_type,MONEY,escaped
     
     #holding
     if holding_tower:
-        holding_tower.draw(WIN) 
+        holding_tower.draw(WIN)
 
     pygame.display.update()
 
@@ -65,6 +69,8 @@ def main():
     #money
     MONEY = 100
 
+    #stage
+    stage = STAGE1
     #escaped
     escaped_count = 0
 
@@ -74,6 +80,10 @@ def main():
 
     selected_tower_type = "Normal"
     enemies = []
+
+    biofilm = []
+    biofilm_form = False
+
     towers = [Tower(300, 400), Tower(500, 300)]
     bullets = []
     spawn_timer = 0
@@ -110,7 +120,10 @@ def main():
                         break
                     x += 110
                     if holding_tower != None:
-                        towers.append(Tower(mx, my))
+                        placing_tower = Tower(mx, my)
+                        placing_tower.cooldown = tower_info["cooldown"]
+                        placing_tower.range = tower_info["range"]
+                        towers.append(placing_tower)
                         holding_tower = None
                         selected_tower_type = None
                         building_tower = False
@@ -153,9 +166,14 @@ def main():
                 new_bullets.append(bullet)
         bullets = new_bullets
 
+
+        if escaped_count >= stage:
+            forming_biofilm = Biofilm(random.randint(10, MAP_WIDTH),random.randint(10, MAP_HEIGHT))
+            biofilm.append(forming_biofilm)
+            escaped_count = 0
         # Draw everything
-        draw_window(WIN, enemies, towers, bullets,selected_tower_type,MONEY,escaped_count,holding_tower)
-        
+        draw_window(WIN, enemies, towers, bullets,selected_tower_type,MONEY,escaped_count,holding_tower,biofilm)
+
     pygame.quit()
 
 if __name__ == "__main__":

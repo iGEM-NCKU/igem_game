@@ -1,23 +1,22 @@
 import pygame
-from config import RED, WHITE
-
+from config import RED, PATH
 
 class Biofilm:
+    
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.range = 150
         self.cooldown = 6 # frames between shots
         self.timer = 0
-
+        self.closest_index, self.closest_spot = min(
+                                            enumerate(PATH),
+                                            key=lambda p: ((p[1][0] - self.x)**2 + (p[1][1] - self.y)**2)**0.5
+                                        )
+        self.myPath = [(self.x,self.y)]+PATH[self.closest_index:]
     def draw(self, win):
         pygame.draw.circle(win, RED, (self.x, self.y), 20)
-        pygame.draw.circle(win, WHITE, (self.x, self.y), self.range, 1)
-
-    def generate_enemy(self, enemies):
-        if self.timer > 0:
-            self.timer -= 1
-            return
         
     def setTowerCooldown(self, cooldownSec):
         self.cooldown = cooldownSec
+
+

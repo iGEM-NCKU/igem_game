@@ -82,7 +82,6 @@ def main():
     enemies = []
 
     biofilm = []
-    biofilm_form = False
 
     towers = [Tower(300, 400), Tower(500, 300)]
     bullets = []
@@ -137,8 +136,8 @@ def main():
             holding_tower.x, holding_tower.y = pygame.mouse.get_pos()
         # Spawn enemies
         spawn_timer += 1
-        if spawn_timer > 12:  # spawn every 2 seconds
-            enemies.append(Enemy())
+        if spawn_timer > 120:  # spawn every 2 seconds
+            enemies.append(Enemy(PATH))
             spawn_timer = 0
 
         # Update enemies
@@ -171,6 +170,12 @@ def main():
             forming_biofilm = Biofilm(random.randint(10, MAP_WIDTH),random.randint(10, MAP_HEIGHT))
             biofilm.append(forming_biofilm)
             escaped_count = 0
+        for bi in biofilm:
+            if bi != None:
+                spawn_timer += 1
+                if spawn_timer > 12:  # spawn every 2 seconds
+                    enemies.append(Enemy(bi.myPath))
+                    spawn_timer = 0
         # Draw everything
         draw_window(WIN, enemies, towers, bullets,selected_tower_type,MONEY,escaped_count,holding_tower,biofilm)
 

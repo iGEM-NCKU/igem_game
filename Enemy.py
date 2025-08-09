@@ -1,9 +1,9 @@
 import pygame
 import math
-from config import PATH, RED, GREEN
+from config import RED, GREEN
 
 class Enemy:
-    def __init__(self):
+    def __init__(self,PATH):
         self.path = PATH
         self.pos_index = 0
         self.x, self.y = self.path[0]

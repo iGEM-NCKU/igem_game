@@ -1,9 +1,10 @@
 import pygame
 import random
+
 from Tower import Tower
 from Enemy import Enemy
 from Biofilm import Biofilm
-
+from Loss_screen import loss_screen
 from config import FPS, HEIGHT, WIDTH, TOWER_TYPES, WHITE, GREEN, BLACK, PATH, STAGE1, MAP_WIDTH, MAP_HEIGHT
 
 def draw_window(win, enemies, towers, bullets, selected_tower_type,MONEY,escaped_count,holding_tower,biofilm):
@@ -129,7 +130,7 @@ def main(win):
             holding_tower.x, holding_tower.y = pygame.mouse.get_pos()
         # Spawn enemies
         spawn_timer += 1
-        if spawn_timer > 120:  # spawn every 2 seconds
+        if spawn_timer > 1:  # spawn every 2 seconds
             enemies.append(Enemy(PATH))
             spawn_timer = 0
 
@@ -163,6 +164,10 @@ def main(win):
             forming_biofilm = Biofilm(random.randint(10, MAP_WIDTH),random.randint(10, MAP_HEIGHT))
             biofilm.append(forming_biofilm)
             escaped_count = 0
+            if len(biofilm) == 2:
+                GAMERESTART = loss_screen()
+                if GAMERESTART :
+                    return
         for bi in biofilm:
             if bi != None:
                 spawn_timer += 1

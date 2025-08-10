@@ -12,4 +12,5 @@ pygame.display.set_caption("Simple Tower Defense")
 
 if __name__ == "__main__":
     main_menu(WIN)
-    main(WIN)
+    while True:
+        main(WIN)

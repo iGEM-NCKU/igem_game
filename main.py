@@ -1,17 +1,10 @@
 import pygame
 import random
-from menu import main_menu
 from Tower import Tower
 from Enemy import Enemy
 from Biofilm import Biofilm
 
 from config import FPS, HEIGHT, WIDTH, TOWER_TYPES, WHITE, GREEN, BLACK, PATH, STAGE1, MAP_WIDTH, MAP_HEIGHT
-
-pygame.init()
-
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-
-pygame.display.set_caption("Simple Tower Defense")
 
 def draw_window(win, enemies, towers, bullets, selected_tower_type,MONEY,escaped_count,holding_tower,biofilm):
     win.fill((200, 200, 200))
@@ -39,7 +32,7 @@ def draw_window(win, enemies, towers, bullets, selected_tower_type,MONEY,escaped
     
     #holding
     if holding_tower:
-        holding_tower.draw(WIN)
+        holding_tower.draw(win)
 
     pygame.display.update()
 
@@ -64,7 +57,7 @@ def draw_ui(win, selected_tower_type):
         win.blit(text, (x + 10, y + 10))
         x += 110
 
-def main():
+def main(win):
 
     #money
     MONEY = 100
@@ -177,10 +170,6 @@ def main():
                     enemies.append(Enemy(bi.myPath))
                     spawn_timer = 0
         # Draw everything
-        draw_window(WIN, enemies, towers, bullets,selected_tower_type,MONEY,escaped_count,holding_tower,biofilm)
+        draw_window(win, enemies, towers, bullets,selected_tower_type,MONEY,escaped_count,holding_tower,biofilm)
 
     pygame.quit()
-
-if __name__ == "__main__":
-    main_menu(WIN)
-    main()

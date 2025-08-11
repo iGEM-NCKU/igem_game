@@ -1,9 +1,10 @@
 import pygame
 from config import BLUE, WHITE
 import math
-from Bullet import Bullet
+from Bullet import Bullet, ANTIBIOTICS_BULLET
+
 class Tower:
-    def __init__(self, x, y):
+    def __init__(self, x, y, bullet = Bullet):
         self.x = x
         self.y = y
         self.range = 150
@@ -12,6 +13,7 @@ class Tower:
         self.cost = 100
         self.duration = 2
         self.durationTimer = self.duration * 60
+        self.bullet_class = bullet
     def draw(self, win):
         pygame.draw.circle(win, BLUE, (self.x, self.y), 20)
         pygame.draw.circle(win, WHITE, (self.x, self.y), self.range, 1)
@@ -37,30 +39,31 @@ class Tower:
 
 
 class Penicillin(Tower):
-    def __init__(self, x, y):
-        super().__init__(x, y)
+    def __init__(self, x, y, bullet= ANTIBIOTICS_BULLET["Penicillin"]):
+        super().__init__(x, y, bullet)
         self.duration = 30
         self.durationTimer = self.duration * 60
 
 
 class Cephalosporin(Tower):
-    def __init__(self, x, y):
-        super().__init__(x, y)
+    def __init__(self, x, y, bullet=ANTIBIOTICS_BULLET["Cephalosporin"]):
+        super().__init__(x, y, bullet)
         self.duration = 30
         self.durationTimer = self.duration * 60
+        self.cooldown = 54
 
 class Tetracycline(Tower):
-    def __init__(self, x, y):
-        super().__init__(x, y)
+    def __init__(self, x, y, bullet=ANTIBIOTICS_BULLET["Tetracycline"]):
+        super().__init__(x, y, bullet)
         self.duration = 25
         self.durationTimer = self.duration * 60
-
+        self.cooldown = 72
 class Macrolide(Tower):
-    def __init__(self, x, y):
-        super().__init__(x, y)
+    def __init__(self, x, y, bullet=ANTIBIOTICS_BULLET["Macrolide"]):
+        super().__init__(x, y, bullet)
         self.duration = 30
         self.durationTimer = self.duration * 60
-
+        self.cooldown = 48
 
 ANTIBIOTICS_TOWER = {
     "Penicillin": Penicillin,

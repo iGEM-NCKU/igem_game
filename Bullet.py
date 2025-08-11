@@ -25,3 +25,29 @@ class Bullet:
 
     def setBulletDamage(self, damage):
         self.damage = damage
+
+class Penicillin_bullet(Bullet):
+    def __init__(self, x, y, target):
+        super().__init__(x, y, target)
+        self.damage = 40
+class Cephalosporin_bullet(Bullet):
+    def __init__(self, x, y, target):
+        super().__init__(x, y, target)
+        self.damage = 50
+class Tetracycline_bullet(Bullet):
+    def __init__(self, x, y, target):
+        super().__init__(x, y, target)
+        self.damage = 35
+class Macrolide_bullet(Bullet):
+    def __init__(self, x, y, target):
+        super().__init__(x, y, target)
+        self.damage = 45
+
+
+ANTIBIOTICS_BULLET = {
+    "Penicillin": Penicillin_bullet,
+    "Cephalosporin": Cephalosporin_bullet,
+    "Tetracycline":Tetracycline_bullet,
+    "Macrolide": Macrolide_bullet
+}
+

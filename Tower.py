@@ -9,7 +9,9 @@ class Tower:
         self.range = 150
         self.cooldown = 60 # frames between shots
         self.timer = 0
-
+        self.cost = 100
+        self.duration = 2
+        self.durationTimer = self.duration * 60
     def draw(self, win):
         pygame.draw.circle(win, BLUE, (self.x, self.y), 20)
         pygame.draw.circle(win, WHITE, (self.x, self.y), self.range, 1)
@@ -26,3 +28,43 @@ class Tower:
                 break
     def setTowerCooldown(self, cooldownSec):
         self.cooldown = cooldownSec
+
+    def update(self):
+        if self.durationTimer > 0:
+            self.durationTimer -= 1
+            return True  
+        return False 
+
+
+class Penicillin(Tower):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.duration = 30
+        self.durationTimer = self.duration * 60
+
+
+class Cephalosporin(Tower):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.duration = 30
+        self.durationTimer = self.duration * 60
+
+class Tetracycline(Tower):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.duration = 25
+        self.durationTimer = self.duration * 60
+
+class Macrolide(Tower):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.duration = 30
+        self.durationTimer = self.duration * 60
+
+
+ANTIBIOTICS_TOWER = {
+    "Penicillin": Penicillin,
+    "Cephalosporin": Cephalosporin,
+    "Tetracycline":Tetracycline,
+    "Macrolide": Macrolide
+}

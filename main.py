@@ -1,11 +1,11 @@
 import pygame
 import random
 
-from Tower import Tower
+from Tower import ANTIBIOTICS_TOWER
 from Enemy import Enemy
 from Biofilm import Biofilm
 from Loss_screen import loss_screen
-from config import FPS, HEIGHT, WIDTH, TOWER_TYPES, WHITE, GREEN, BLACK, PATH, STAGE1, MAP_WIDTH, MAP_HEIGHT
+from config import FPS, HEIGHT, WIDTH, WHITE, GREEN, BLACK, PATH, STAGE1, MAP_WIDTH, MAP_HEIGHT
 
 def draw_window(win, enemies, towers, bullets, selected_tower_type,MONEY,escaped_count,holding_tower,biofilm):
     win.fill((200, 200, 200))
@@ -42,7 +42,7 @@ def draw_ui(win, selected_tower_type):
     x = 10
     mouse_pos = pygame.mouse.get_pos()
 
-    for name in TOWER_TYPES:
+    for name in ANTIBIOTICS_TOWER:
         rect = pygame.Rect(x, y, 100, 40)
         if rect.collidepoint(mouse_pos):
             color = (144, 255, 144)
@@ -77,7 +77,7 @@ def main(win):
 
     biofilm = []
 
-    towers = [Tower(300, 400), Tower(500, 300)]
+    towers = []
     bullets = []
     spawn_timer = 0
     UI_select_time = None
@@ -88,11 +88,9 @@ def main(win):
 
     #building_tower
         if building_tower and selected_tower_type != "":
-            tower_info = TOWER_TYPES[selected_tower_type]
+            tower_class = ANTIBIOTICS_TOWER[selected_tower_type]
             print("build")
-            holding_tower = Tower(mx, my)
-            holding_tower.cooldown = tower_info["cooldown"]
-            holding_tower.range = tower_info["range"]
+            holding_tower = tower_class(mx, my)
 
         #UI check    
         for event in pygame.event.get():
@@ -102,20 +100,19 @@ def main(win):
                 mx, my = pygame.mouse.get_pos()
                 x = 10
                 y = HEIGHT - 50
-                for name in TOWER_TYPES:
+                for name in ANTIBIOTICS_TOWER:
                     rect = pygame.Rect(x, y, 100, 40)
                     if rect.collidepoint((mx, my)):
                         print(mx,my)
                         selected_tower_type = name
                         UI_select_time = pygame.time.get_ticks() + 1500  # 1.5sec
-                        holding_tower = Tower(mx, my)
+                        tower_class = ANTIBIOTICS_TOWER[selected_tower_type]
+                        holding_tower = tower_class(mx,my)
                         building_tower = True
                         break
                     x += 110
                     if holding_tower != None:
-                        placing_tower = Tower(mx, my)
-                        placing_tower.cooldown = tower_info["cooldown"]
-                        placing_tower.range = tower_info["range"]
+                        placing_tower = tower_class(mx, my)
                         towers.append(placing_tower)
                         holding_tower = None
                         selected_tower_type = None
@@ -148,9 +145,14 @@ def main(win):
         enemies = alive_enemies
 
 
+        
         # Towers shoot
+        alive_towers = []
         for tower in towers:
-            tower.shoot(enemies, bullets)
+            if tower.update():
+                tower.shoot(enemies, bullets)
+                alive_towers.append(tower)
+        towers = alive_towers
 
         # Update bullets
         new_bullets = []

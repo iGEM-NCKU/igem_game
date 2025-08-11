@@ -5,9 +5,10 @@ from Tower import ANTIBIOTICS_TOWER
 from Enemy import Enemy
 from Biofilm import Biofilm
 from Loss_screen import loss_screen
-from config import FPS, HEIGHT, WIDTH, WHITE, GREEN, BLACK, PATH, STAGE1, MAP_WIDTH, MAP_HEIGHT
-
-def draw_window(win, enemies, towers, bullets, selected_tower_type,MONEY,escaped_count,holding_tower,biofilm):
+from config import FPS, HEIGHT, WIDTH, BLACK, PATH, STAGE1, MAP_WIDTH, MAP_HEIGHT
+from Enzyme_tower import ENZYME_TOWER
+from draw_ui import draw_ui
+def draw_window(win, enemies, towers, bullets, selected_tower_type,MONEY,escaped_count,holding_tower,biofilm,ui_level, selected_category):
     win.fill((200, 200, 200))
     for p in PATH:
         pygame.draw.circle(win, BLACK, p, 5)
@@ -19,7 +20,7 @@ def draw_window(win, enemies, towers, bullets, selected_tower_type,MONEY,escaped
         b.draw(win)
     for bi in biofilm:
         bi.draw(win)
-    draw_ui(win, selected_tower_type)
+    draw_ui(win, ui_level, selected_category, selected_tower_type)
 
     #money
     money_font = pygame.font.SysFont(None, 30)
@@ -37,27 +38,6 @@ def draw_window(win, enemies, towers, bullets, selected_tower_type,MONEY,escaped
 
     pygame.display.update()
 
-def draw_ui(win, selected_tower_type):
-    y = HEIGHT - 50
-    x = 10
-    mouse_pos = pygame.mouse.get_pos()
-
-    for name in ANTIBIOTICS_TOWER:
-        rect = pygame.Rect(x, y, 100, 40)
-        if rect.collidepoint(mouse_pos):
-            color = (144, 255, 144)
-        if selected_tower_type == name:
-            color = GREEN  
-        if not rect.collidepoint(mouse_pos) and selected_tower_type != name:
-            color = WHITE  
-
-        pygame.draw.rect(win, color, rect)
-        pygame.draw.rect(win, BLACK, rect, 2)
-        font = pygame.font.SysFont(None, 24)
-        text = font.render(name, True, BLACK)
-        win.blit(text, (x + 10, y + 10))
-        x += 110
-
 def main(win):
 
     #money
@@ -72,12 +52,17 @@ def main(win):
     building_tower= False
     clock = pygame.time.Clock()
 
+    ui_level = 1
+    selected_category = None
     selected_tower_type = "Normal"
+    
     enemies = []
 
     biofilm = []
 
     towers = []
+    enzyme_towers = []
+
     bullets = []
     spawn_timer = 0
     UI_select_time = None
@@ -154,6 +139,14 @@ def main(win):
                 alive_towers.append(tower)
         towers = alive_towers
 
+        #Enzyme_tower aoe damage
+        alive_enzyme_tower = []
+        for enzyme_tower in enzyme_towers:
+            if enzyme_tower.update():
+                enzyme_tower.apply_area_damage(enemies)
+                alive_enzyme_tower.append(enzyme_tower)
+        enzyme_towers = alive_enzyme_tower
+
         # Update bullets
         new_bullets = []
         for bullet in bullets:
@@ -177,6 +170,6 @@ def main(win):
                     enemies.append(Enemy(bi.myPath))
                     spawn_timer = 0
         # Draw everything
-        draw_window(win, enemies, towers, bullets,selected_tower_type,MONEY,escaped_count,holding_tower,biofilm)
+        draw_window(win, enemies, towers, bullets,selected_tower_type,MONEY,escaped_count,holding_tower,biofilm, ui_level, selected_category)
 
     pygame.quit()

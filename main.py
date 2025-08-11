@@ -7,8 +7,8 @@ from Biofilm import Biofilm
 from Loss_screen import loss_screen
 from config import FPS, HEIGHT, WIDTH, BLACK, PATH, STAGE1, MAP_WIDTH, MAP_HEIGHT
 from Enzyme_tower import ENZYME_TOWER
-from draw_ui import draw_ui
-def draw_window(win, enemies, towers, bullets, selected_tower_type,MONEY,escaped_count,holding_tower,biofilm,ui_level, selected_category):
+from draw_ui import draw_ui, CATEGORIES, CATEGORY_TO_ITEMS
+def draw_window(win, enemies, towers, enzyme_towers, bullets, selected_tower_type,MONEY,escaped_count,holding_tower,biofilm,ui_level, selected_category):
     win.fill((200, 200, 200))
     for p in PATH:
         pygame.draw.circle(win, BLACK, p, 5)
@@ -20,6 +20,8 @@ def draw_window(win, enemies, towers, bullets, selected_tower_type,MONEY,escaped
         b.draw(win)
     for bi in biofilm:
         bi.draw(win)
+    for en in enzyme_towers:
+        en.draw(win)
     draw_ui(win, ui_level, selected_category, selected_tower_type)
 
     #money
@@ -73,9 +75,14 @@ def main(win):
 
     #building_tower
         if building_tower and selected_tower_type != "":
-            tower_class = ANTIBIOTICS_TOWER[selected_tower_type]
-            print("build")
-            holding_tower = tower_class(mx, my)
+            if selected_category == "A":
+                tower_class = ANTIBIOTICS_TOWER[selected_tower_type]
+                print("build")
+                holding_tower = tower_class(mx, my)
+            elif selected_category == "B":
+                tower_class = ENZYME_TOWER[selected_tower_type]
+                print("build")
+                holding_tower = tower_class(mx, my)
 
         #UI check    
         for event in pygame.event.get():
@@ -83,25 +90,60 @@ def main(win):
                 run = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mx, my = pygame.mouse.get_pos()
-                x = 10
                 y = HEIGHT - 50
-                for name in ANTIBIOTICS_TOWER:
-                    rect = pygame.Rect(x, y, 100, 40)
-                    if rect.collidepoint((mx, my)):
-                        print(mx,my)
-                        selected_tower_type = name
-                        UI_select_time = pygame.time.get_ticks() + 1500  # 1.5sec
-                        tower_class = ANTIBIOTICS_TOWER[selected_tower_type]
-                        holding_tower = tower_class(mx,my)
-                        building_tower = True
-                        break
-                    x += 110
-                    if holding_tower != None:
-                        placing_tower = tower_class(mx, my)
-                        towers.append(placing_tower)
+                # 1
+                if ui_level == 1:
+                    #A.B
+                    x = 10
+                    for cat in CATEGORIES:
+                        rect = pygame.Rect(x, y, 100, 40)
+                        if rect.collidepoint((mx, my)):
+                            selected_category = cat
+                            ui_level = 2
+                            selected_tower_type = ""
+                            break
+                        x += 110
+                # 2
+                elif ui_level == 2 and selected_category in CATEGORY_TO_ITEMS:    
+                    back_rect = pygame.Rect(10, y - 45, 80, 35)
+                    if back_rect.collidepoint((mx, my)):
+                        ui_level = 1
+                        selected_category = None
+                        selected_tower_type = ""
                         holding_tower = None
-                        selected_tower_type = None
                         building_tower = False
+                        continue
+                        # click tower
+                    x = 10
+                    items = CATEGORY_TO_ITEMS[selected_category]
+                    for name in items:
+                        rect = pygame.Rect(x, y, 100, 40)
+                        if rect.collidepoint((mx, my)):
+                            print(mx,my)
+                            selected_tower_type = name
+                            UI_select_time = pygame.time.get_ticks() + 1500  # 1.5sec
+                            if selected_category == "A":
+                                tower_class = ANTIBIOTICS_TOWER[selected_tower_type]
+                            elif selected_category == "B":
+                                tower_class = ENZYME_TOWER[selected_tower_type]
+                            
+                            holding_tower = tower_class(mx,my)
+                            building_tower = True
+                            break
+                        x += 110
+
+                        if holding_tower != None:
+                            if selected_category == "A":
+                                placing_tower = tower_class(mx, my)
+                                towers.append(placing_tower)
+                            elif selected_category == "B":
+                                placing_tower = tower_class(mx, my)
+                                enzyme_towers.append(placing_tower)
+
+                            holding_tower = None
+                            selected_tower_type = None
+                            building_tower = False
+                        
 
         # Check time ticks
         if UI_select_time and pygame.time.get_ticks() > UI_select_time:
@@ -112,7 +154,7 @@ def main(win):
             holding_tower.x, holding_tower.y = pygame.mouse.get_pos()
         # Spawn enemies
         spawn_timer += 1
-        if spawn_timer > 1:  # spawn every 2 seconds
+        if spawn_timer > 120:  # spawn every 2 seconds
             enemies.append(Enemy(PATH))
             spawn_timer = 0
 
@@ -170,6 +212,6 @@ def main(win):
                     enemies.append(Enemy(bi.myPath))
                     spawn_timer = 0
         # Draw everything
-        draw_window(win, enemies, towers, bullets,selected_tower_type,MONEY,escaped_count,holding_tower,biofilm, ui_level, selected_category)
+        draw_window(win, enemies, towers,enzyme_towers, bullets,selected_tower_type,MONEY,escaped_count,holding_tower,biofilm, ui_level, selected_category)
 
     pygame.quit()

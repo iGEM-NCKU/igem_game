@@ -19,10 +19,15 @@ class Enzyme_Tower():
         pygame.draw.circle(win, WHITE, (self.x, self.y), self.range, 1)
 
     def apply_area_damage(self,enemies):
-        for e in enemies:
-            dist = math.hypot(e.x - self.x, e.y - self.y)
-            if dist <= self.range:
-                e.health -= self.damage
+         if self.timer > 0:
+            self.timer -= 1
+            return
+         else:
+            for e in enemies:
+                dist = math.hypot(e.x - self.x, e.y - self.y)
+                self.timer = self.cooldown
+                if dist <= self.range:
+                    e.health -= self.damage
     def setTowerCooldown(self, cooldownSec):
         self.cooldown = cooldownSec
 

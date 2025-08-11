@@ -44,3 +44,8 @@ def draw_ui(win, ui_level, selected_category, selected_tower_type):
             text = font.render(name, True, BLACK)
             win.blit(text, (x + 10, y + 10))
             x += 110
+
+        back_rect = pygame.Rect(10, y - 45, 80, 35)
+        pygame.draw.rect(win, (230,230,230), back_rect)
+        pygame.draw.rect(win, (0,0,0), back_rect, 2)
+        win.blit(font.render("Back", True, (0,0,0)), (20, y - 40))

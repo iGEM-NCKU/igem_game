@@ -7,7 +7,7 @@ class Enemy:
         self.path = PATH
         self.pos_index = 0
         self.x, self.y = self.path[0]
-        self.speed = 6
+        self.speed = 2
         self.health = 100
         self.max_health = 100
 

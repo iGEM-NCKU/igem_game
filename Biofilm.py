@@ -6,7 +6,7 @@ class Biofilm:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.cooldown = 6 # frames between shots
+        self.cooldown = 120 # frames between shots
         self.timer = 0
         self.closest_index, self.closest_spot = min(
                                             enumerate(PATH),
@@ -16,7 +16,7 @@ class Biofilm:
     def draw(self, win):
         pygame.draw.circle(win, RED, (self.x, self.y), 20)
         
-    def setTowerCooldown(self, cooldownSec):
-        self.cooldown = cooldownSec
+    def getTowerCooldown(self):
+        return self.cooldown
 
 

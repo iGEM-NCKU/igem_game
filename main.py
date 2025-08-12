@@ -2,13 +2,14 @@ import pygame
 import random
 
 from Tower import ANTIBIOTICS_TOWER
-from Enemy import Enemy
+from Enemy import Enemy, ENEMY_TYPE
 from Biofilm import Biofilm
 from Loss_screen import loss_screen
-from config import FPS, HEIGHT, WIDTH, BLACK, PATH, STAGE1, MAP_WIDTH, MAP_HEIGHT
+from config import FPS, HEIGHT, WIDTH, BLACK, PATH, STAGE1, MAP_WIDTH, MAP_HEIGHT,GENERATION_WEIGHTS_STAGE_1
 from Enzyme_tower import ENZYME_TOWER
 from draw_ui import draw_ui, CATEGORIES, CATEGORY_TO_ITEMS
-def draw_window(win, enemies, towers, enzyme_towers, bullets, selected_tower_type,MONEY,escaped_count,holding_tower,biofilm,ui_level, selected_category):
+
+def draw_window(win, enemies, towers, enzyme_towers, bullets, selected_tower_type,MONEY,escaped_count,holding_tower,biofilm,ui_level, selected_category,minus_heart):
     win.fill((200, 200, 200))
     for p in PATH:
         pygame.draw.circle(win, BLACK, p, 5)
@@ -22,7 +23,7 @@ def draw_window(win, enemies, towers, enzyme_towers, bullets, selected_tower_typ
         bi.draw(win)
     for en in enzyme_towers:
         en.draw(win)
-    draw_ui(win, ui_level, selected_category, selected_tower_type)
+    draw_ui(win, ui_level, selected_category, selected_tower_type,minus_heart)
 
     #money
     money_font = pygame.font.SysFont(None, 30)
@@ -45,10 +46,9 @@ def main(win):
     #money
     MONEY = 100
 
-    #stage
-    stage = STAGE1
     #escaped
     escaped_count = 0
+    minus_heart = 0
 
     run = True
     building_tower= False
@@ -153,9 +153,12 @@ def main(win):
         if holding_tower != None:
             holding_tower.x, holding_tower.y = pygame.mouse.get_pos()
         # Spawn enemies
+
         spawn_timer += 1
         if spawn_timer > 120:  # spawn every 2 seconds
-            enemies.append(Enemy(PATH))
+            enemy_cls = random.choices(ENEMY_TYPE, weights =GENERATION_WEIGHTS_STAGE_1,k=1)[0] #return list[0]
+            new_enemy = enemy_cls(PATH)
+            enemies.append(new_enemy)
             spawn_timer = 0
 
         # Update enemies
@@ -164,7 +167,7 @@ def main(win):
             alive = e.move()
             if not alive:
                 if e.health > 0:
-                    escaped_count += 1
+                    escaped_count += e.damage
             elif e.health > 0:
                 alive_enemies.append(e)
             else:
@@ -197,21 +200,28 @@ def main(win):
         bullets = new_bullets
 
 
-        if escaped_count >= stage:
+        if escaped_count >= STAGE1["hearts"]:
             forming_biofilm = Biofilm(random.randint(10, MAP_WIDTH),random.randint(10, MAP_HEIGHT))
             biofilm.append(forming_biofilm)
+            minus_heart += 1
             escaped_count = 0
-            if len(biofilm) == 2:
+            if len(biofilm) == STAGE1["hearts"]:
                 GAMERESTART = loss_screen()
                 if GAMERESTART :
                     return
         for bi in biofilm:
             if bi != None:
                 spawn_timer += 1
-                if spawn_timer > 12:  # spawn every 2 seconds
+                if spawn_timer > bi.getTowerCooldown():  # spawn every 2 seconds
                     enemies.append(Enemy(bi.myPath))
                     spawn_timer = 0
         # Draw everything
-        draw_window(win, enemies, towers,enzyme_towers, bullets,selected_tower_type,MONEY,escaped_count,holding_tower,biofilm, ui_level, selected_category)
+        draw_window(win, enemies, towers,enzyme_towers, bullets,selected_tower_type,MONEY,escaped_count,holding_tower,biofilm, ui_level, selected_category,
+                    minus_heart)
 
     pygame.quit()
+
+
+def generate_enemy():
+    enemy_class = random.choices(ENEMY_TYPE, weights=GENERATION_WEIGHTS_STAGE_1, k=1)[0]  # 根據比率選擇敵人類型
+    return enemy_class() 

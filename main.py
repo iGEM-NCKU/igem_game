@@ -10,6 +10,9 @@ from Enzyme_tower import ENZYME_TOWER
 from draw_ui import draw_ui, CATEGORIES, CATEGORY_TO_ITEMS
 from map import GRID_SIZE, map_data, Tile, TILE_MAP_HEIGHT, TILE_MAP_WIDTH
 
+pygame.mixer.init()
+shot_fx = pygame.mixer.Sound('src/audio/shot.wav')
+
 def draw_window(win, enemies, towers, enzyme_towers, bullets, selected_tower_type,MONEY,escaped_count,holding_tower,biofilm,ui_level, selected_category,minus_heart,map_tiles):
     win.fill((200, 200, 200))
     mx, my = pygame.mouse.get_pos()

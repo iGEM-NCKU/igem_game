@@ -1,5 +1,5 @@
 import pygame
-from config import BLUE, WHITE
+from config import BLUE
 import math
 from Bullet import Bullet, ANTIBIOTICS_BULLET
 

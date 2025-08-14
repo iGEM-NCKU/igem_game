@@ -5,14 +5,14 @@ from Tower import ANTIBIOTICS_TOWER
 from Enemy import Enemy, ENEMY_TYPE
 from Biofilm import Biofilm
 from Loss_screen import loss_screen
-from config import FPS, HEIGHT, WIDTH, BLACK, PATH, STAGE1, GENERATION_WEIGHTS_STAGE_1
+from config import FPS, HEIGHT, WIDTH, BLACK,WHITE,YELLOW, PATH, STAGE1, GENERATION_WEIGHTS_STAGE_1
 from Enzyme_tower import ENZYME_TOWER
 from draw_ui import draw_ui, CATEGORIES, CATEGORY_TO_ITEMS
 from map import GRID_SIZE, map_data, Tile, TILE_MAP_HEIGHT, TILE_MAP_WIDTH
 
 def draw_window(win, enemies, towers, enzyme_towers, bullets, selected_tower_type,MONEY,escaped_count,holding_tower,biofilm,ui_level, selected_category,minus_heart,map_tiles):
     win.fill((200, 200, 200))
-
+    mx, my = pygame.mouse.get_pos()
     for row in map_tiles:
         for tile in row:
             tile.draw(win)
@@ -20,28 +20,28 @@ def draw_window(win, enemies, towers, enzyme_towers, bullets, selected_tower_typ
     for e in enemies:
         e.draw(win)
     for t in towers:
-        t.draw(win)
+        t.draw(win, mx, my)
     for b in bullets:
         b.draw(win)
     for bi in biofilm:
         bi.draw(win)
     for en in enzyme_towers:
-        en.draw(win)
+        en.draw(win, mx, my)
     draw_ui(win, ui_level, selected_category, selected_tower_type,minus_heart)
 
     #money
     money_font = pygame.font.SysFont(None, 30)
-    money_text = money_font.render(f"Money: ${MONEY}", True, BLACK)
+    money_text = money_font.render(f"Money: ${MONEY}", True, YELLOW)
     win.blit(money_text, (WIDTH - 150, HEIGHT - 40))
 
     #escaped
     escaped_font = pygame.font.SysFont(None, 30)
-    escaped_text = escaped_font.render(f"Escaped_bectaria: {escaped_count}", True, BLACK)
+    escaped_text = escaped_font.render(f"Escaped_bectaria: {escaped_count}", True, WHITE)
     win.blit(escaped_text, (WIDTH-250, HEIGHT - 60))
     
     #holding
     if holding_tower:
-        holding_tower.draw(win)
+        holding_tower.draw(win,mx,my)
 
     pygame.display.update()
 

@@ -7,6 +7,7 @@ class Enzyme_Tower():
         self.x = x
         self.y = y
         self.range = 100
+        self.size = 20
         self.cooldown = 60 # frames between shots
         self.timer = 0
         self.cost = 100
@@ -14,9 +15,13 @@ class Enzyme_Tower():
         self.durationTimer = self.duration * 60
         self.damage = 30
 
-    def draw(self, win):
+    def draw(self, win, mx, my):
         pygame.draw.circle(win, BLUE, (self.x, self.y), 20)
-        pygame.draw.circle(win, WHITE, (self.x, self.y), self.range, 1)
+        distance = ((mx - self.x) ** 2 + (my - self.y) ** 2) ** 0.5
+        if distance <= self.size:
+            s = pygame.Surface((self.range*2, self.range*2), pygame.SRCALPHA)
+            pygame.draw.circle(s, (255, 255, 255, 100), (self.range, self.range), self.range)
+            win.blit(s, (self.x - self.range, self.y - self.range))
 
     def apply_area_damage(self,enemies):
          if self.timer > 0:

@@ -5,10 +5,11 @@ from Tower import ANTIBIOTICS_TOWER
 from Enemy import Enemy, ENEMY_TYPE
 from Biofilm import Biofilm
 from Loss_screen import loss_screen
-from config import FPS, HEIGHT, WIDTH, BLACK, PATH, STAGE1, MAP_WIDTH, MAP_HEIGHT,GENERATION_WEIGHTS_STAGE_1
+from config import FPS, HEIGHT, WIDTH, BLACK, PATH, STAGE1, GENERATION_WEIGHTS_STAGE_1
 from Enzyme_tower import ENZYME_TOWER
 from draw_ui import draw_ui, CATEGORIES, CATEGORY_TO_ITEMS
 from map import GRID_SIZE, map_data, Tile, TILE_MAP_HEIGHT, TILE_MAP_WIDTH
+
 def draw_window(win, enemies, towers, enzyme_towers, bullets, selected_tower_type,MONEY,escaped_count,holding_tower,biofilm,ui_level, selected_category,minus_heart,map_tiles):
     win.fill((200, 200, 200))
 
@@ -16,8 +17,6 @@ def draw_window(win, enemies, towers, enzyme_towers, bullets, selected_tower_typ
         for tile in row:
             tile.draw(win)
 
-    for p in PATH:
-        pygame.draw.circle(win, BLACK, p, 5)
     for e in enemies:
         e.draw(win)
     for t in towers:
@@ -211,7 +210,15 @@ def main(win):
         bullets = new_bullets
 
         if escaped_count >= STAGE1["hearts"]:
-            forming_biofilm = Biofilm(random.randint(10, MAP_WIDTH),random.randint(10, MAP_HEIGHT))
+            while True:
+                row = random.randint(0, TILE_MAP_HEIGHT - 1)
+                col = random.randint(0, TILE_MAP_WIDTH - 1)
+                tile = map_tiles[row][col]
+                if not tile.is_path():  # 不是道路才生成
+                    break
+            x = col * GRID_SIZE + GRID_SIZE // 2
+            y = row * GRID_SIZE + GRID_SIZE // 2
+            forming_biofilm = Biofilm(x, y)
             biofilm.append(forming_biofilm)
             minus_heart += 1
             escaped_count = 0

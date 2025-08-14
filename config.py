@@ -3,6 +3,8 @@
 WIDTH, HEIGHT = 1280, 720
 MAP_WIDTH, MAP_HEIGHT = 1280, 670
 
+TILE_SIZE = 40
+
 BIOFILM_TYPES = {
     "TIER1": {"cooldown": 30, "range": 120},
     "TIER2": {"cooldown": 90, "range": 200},
@@ -43,7 +45,7 @@ FPS = 60
 
 
 # Enemy Path
-PATH = [(0, 300), (200, 300), (200, 500), (600, 500), (600, 100), (800, 100), (1000, 600)]
+PATH = [(20, 300), (200, 300), (200, 500), (600, 500), (600, 100), (800, 100), (1000, 600)]
 
 #path
 

@@ -8,9 +8,14 @@ from Loss_screen import loss_screen
 from config import FPS, HEIGHT, WIDTH, BLACK, PATH, STAGE1, MAP_WIDTH, MAP_HEIGHT,GENERATION_WEIGHTS_STAGE_1
 from Enzyme_tower import ENZYME_TOWER
 from draw_ui import draw_ui, CATEGORIES, CATEGORY_TO_ITEMS
-
-def draw_window(win, enemies, towers, enzyme_towers, bullets, selected_tower_type,MONEY,escaped_count,holding_tower,biofilm,ui_level, selected_category,minus_heart):
+from map import GRID_SIZE, map_data, Tile, TILE_MAP_HEIGHT, TILE_MAP_WIDTH
+def draw_window(win, enemies, towers, enzyme_towers, bullets, selected_tower_type,MONEY,escaped_count,holding_tower,biofilm,ui_level, selected_category,minus_heart,map_tiles):
     win.fill((200, 200, 200))
+
+    for row in map_tiles:
+        for tile in row:
+            tile.draw(win)
+
     for p in PATH:
         pygame.draw.circle(win, BLACK, p, 5)
     for e in enemies:
@@ -42,6 +47,8 @@ def draw_window(win, enemies, towers, enzyme_towers, bullets, selected_tower_typ
     pygame.display.update()
 
 def main(win):
+    #map
+    map_tiles = [[Tile(col, row, map_data[row][col]) for col in range(TILE_MAP_WIDTH)] for row in range(TILE_MAP_HEIGHT)]
 
     #money
     MONEY = 100
@@ -78,11 +85,11 @@ def main(win):
             if selected_category == "A":
                 tower_class = ANTIBIOTICS_TOWER[selected_tower_type]
                 print("build")
-                holding_tower = tower_class(mx, my)
+                holding_tower = tower_class(tile_px, tile_py)
             elif selected_category == "B":
                 tower_class = ENZYME_TOWER[selected_tower_type]
                 print("build")
-                holding_tower = tower_class(mx, my)
+                holding_tower = tower_class(tile_px, tile_py)
 
         #UI check    
         for event in pygame.event.get():
@@ -90,6 +97,7 @@ def main(win):
                 run = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mx, my = pygame.mouse.get_pos()
+                grid_x, grid_y = get_grid_pos(mx, my)
                 y = HEIGHT - 50
                 # 1
                 if ui_level == 1:
@@ -126,19 +134,22 @@ def main(win):
                                 tower_class = ANTIBIOTICS_TOWER[selected_tower_type]
                             elif selected_category == "B":
                                 tower_class = ENZYME_TOWER[selected_tower_type]
-                            
-                            holding_tower = tower_class(mx,my)
+                            tile_px, tile_py = grid_x * GRID_SIZE+ GRID_SIZE // 2, grid_y * GRID_SIZE+ GRID_SIZE // 2
+                            holding_tower = tower_class(tile_px,tile_py)
                             building_tower = True
                             break
                         x += 110
 
                         if holding_tower != None:
-                            if selected_category == "A":
-                                placing_tower = tower_class(mx, my)
-                                towers.append(placing_tower)
-                            elif selected_category == "B":
-                                placing_tower = tower_class(mx, my)
-                                enzyme_towers.append(placing_tower)
+                            tile_px, tile_py = grid_x * GRID_SIZE+ GRID_SIZE // 2, grid_y * GRID_SIZE+ GRID_SIZE // 2
+                            row, col = get_tile_index(tile_px, tile_py)
+                            tile = map_tiles[row][col]
+                            if selected_category == "A" and not tile.is_path():
+                                    placing_tower = tower_class(tile_px, tile_py)
+                                    towers.append(placing_tower)
+                            elif selected_category == "B" and not tile.is_path():
+                                    placing_tower = tower_class(tile_px, tile_py)
+                                    enzyme_towers.append(placing_tower)
 
                             holding_tower = None
                             selected_tower_type = None
@@ -199,7 +210,6 @@ def main(win):
                 new_bullets.append(bullet)
         bullets = new_bullets
 
-
         if escaped_count >= STAGE1["hearts"]:
             forming_biofilm = Biofilm(random.randint(10, MAP_WIDTH),random.randint(10, MAP_HEIGHT))
             biofilm.append(forming_biofilm)
@@ -217,11 +227,18 @@ def main(win):
                     spawn_timer = 0
         # Draw everything
         draw_window(win, enemies, towers,enzyme_towers, bullets,selected_tower_type,MONEY,escaped_count,holding_tower,biofilm, ui_level, selected_category,
-                    minus_heart)
+                    minus_heart,map_tiles)
 
     pygame.quit()
 
 
 def generate_enemy():
-    enemy_class = random.choices(ENEMY_TYPE, weights=GENERATION_WEIGHTS_STAGE_1, k=1)[0]  # 根據比率選擇敵人類型
+    enemy_class = random.choices(ENEMY_TYPE, weights=GENERATION_WEIGHTS_STAGE_1, k=1)[0]
     return enemy_class() 
+def get_grid_pos(x, y):
+    return x // GRID_SIZE, y // GRID_SIZE
+
+def get_tile_index(mx, my):
+    col = mx // GRID_SIZE
+    row = my // GRID_SIZE
+    return row, col

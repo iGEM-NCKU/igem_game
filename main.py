@@ -179,9 +179,9 @@ def main(win):
         for e in enemies:
             alive = e.move()
             if not alive:
-                if e.health > 0:
+                if e.check_death() == False:
                     escaped_count += e.damage
-            elif e.health > 0:
+            elif e.check_death() == False:
                 alive_enemies.append(e)
             else:
                 MONEY += 1
@@ -217,7 +217,7 @@ def main(win):
                 row = random.randint(0, TILE_MAP_HEIGHT - 1)
                 col = random.randint(0, TILE_MAP_WIDTH - 1)
                 tile = map_tiles[row][col]
-                if not tile.is_path():  # 不是道路才生成
+                if not tile.is_path(): 
                     break
             x = col * GRID_SIZE + GRID_SIZE // 2
             y = row * GRID_SIZE + GRID_SIZE // 2

@@ -40,7 +40,7 @@ class Enzyme_Tower():
                 dist = math.hypot(e.x - self.x, e.y - self.y)
                 self.timer = self.cooldown
                 if dist <= self.range:
-                    e.health -= self.damage
+                    e.polsac -= self.damage
             self.timer = self.cooldown
             self.show_range_timer = 5
     def setTowerCooldown(self, cooldownSec):
@@ -59,6 +59,19 @@ class DNase1(Enzyme_Tower):
         self.cooldown = 108
         self.duration = 20
         self.durationTimer = self.duration * 60
+    def apply_area_damage(self,enemies):
+
+        if self.timer > 0:
+            self.timer -= 1
+            return
+        else:
+            for e in enemies:
+                dist = math.hypot(e.x - self.x, e.y - self.y)
+                self.timer = self.cooldown
+                if dist <= self.range:
+                    e.Dna_membrane -= self.damage
+            self.timer = self.cooldown
+            self.show_range_timer = 5
 class Proteinase_K(Enzyme_Tower):
     def __init__(self, x, y):
         super().__init__(x, y)
@@ -66,6 +79,19 @@ class Proteinase_K(Enzyme_Tower):
         self.cooldown = 72
         self.duration = 25
         self.durationTimer = self.duration * 60
+    def apply_area_damage(self,enemies):
+
+        if self.timer > 0:
+            self.timer -= 1
+            return
+        else:
+            for e in enemies:
+                dist = math.hypot(e.x - self.x, e.y - self.y)
+                self.timer = self.cooldown
+                if dist <= self.range:
+                    e.protein_membrane -= self.damage
+            self.timer = self.cooldown
+            self.show_range_timer = 5
 class Dispersin_B(Enzyme_Tower):
     def __init__(self, x, y):
         super().__init__(x, y)
@@ -73,6 +99,19 @@ class Dispersin_B(Enzyme_Tower):
         self.cooldown = 90
         self.duration = 20
         self.durationTimer = self.duration * 60
+    def apply_area_damage(self,enemies):
+
+        if self.timer > 0:
+            self.timer -= 1
+            return
+        else:
+            for e in enemies:
+                dist = math.hypot(e.x - self.x, e.y - self.y)
+                self.timer = self.cooldown
+                if dist <= self.range:
+                    e.polysac -= self.damage
+            self.timer = self.cooldown
+            self.show_range_timer = 5
 
 ENZYME_TOWER = {
     "DNsae1" : DNase1,

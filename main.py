@@ -5,7 +5,7 @@ from Tower import ANTIBIOTICS_TOWER
 from Enemy import Enemy, ENEMY_TYPE
 from Biofilm import Biofilm
 from Loss_screen import loss_screen
-from config import FPS, HEIGHT, WIDTH, BLACK,WHITE,YELLOW, PATH, STAGE1, GENERATION_WEIGHTS_STAGE_1
+from config import FPS, HEIGHT, WIDTH,WHITE,YELLOW, PATH, STAGE1, GENERATION_WEIGHTS_STAGE_1
 from Enzyme_tower import ENZYME_TOWER
 from draw_ui import draw_ui, CATEGORIES, CATEGORY_TO_ITEMS
 from map import GRID_SIZE, map_data, Tile, TILE_MAP_HEIGHT, TILE_MAP_WIDTH
@@ -21,7 +21,8 @@ def draw_window(win, enemies, towers, enzyme_towers, bullets, selected_tower_typ
             tile.draw(win)
 
     for e in enemies:
-        e.draw(win)
+        enemy_messege = f"{e.name}\nPolysac: {e.polysac}/{e.max_polysac}\nDNA Membrane: {e.Dna_membrane}/{e.max_Dna_membrane}\nProtein Membrane: {e.protein_membrane}/{e.max_protein_membrane}"
+        e.draw(enemy_messege, win, mx,my)
     for t in towers:
         t.draw(win, mx, my)
     for b in bullets:

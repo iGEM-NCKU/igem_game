@@ -2,7 +2,7 @@ import pygame
 import random
 
 from Tower import ANTIBIOTICS_TOWER
-from Enemy import Enemy, ENEMY_TYPE
+from Enemy import ENEMY_TYPE
 from Biofilm import Biofilm
 from Loss_screen import loss_screen
 from config import FPS, HEIGHT, WIDTH,WHITE,YELLOW, PATH, STAGE1, GENERATION_WEIGHTS_STAGE_1
@@ -166,8 +166,8 @@ def main(win):
         # holding_tower
         if holding_tower != None:
             holding_tower.x, holding_tower.y = pygame.mouse.get_pos()
-        # Spawn enemies
 
+        # Spawn enemies
         spawn_timer += 1
         if spawn_timer > 120:  # spawn every 2 seconds
             enemy_cls = random.choices(ENEMY_TYPE, weights =GENERATION_WEIGHTS_STAGE_1,k=1)[0] #return list[0]
@@ -231,10 +231,12 @@ def main(win):
                 if GAMERESTART :
                     return
         for bi in biofilm:
-            if bi != None:
-                spawn_timer += 1
-                if spawn_timer > bi.getTowerCooldown():  # spawn every 2 seconds
-                    enemies.append(Enemy(bi.myPath))
+             if bi != None:
+                 spawn_timer += 1
+                 if spawn_timer > bi.getTowerCooldown():  # spawn every 2 seconds
+                    enemy_cls = random.choices(ENEMY_TYPE, weights =GENERATION_WEIGHTS_STAGE_1,k=1)[0] #return list[0]
+                    new_enemy = enemy_cls(bi.myPath)
+                    enemies.append(new_enemy)
                     spawn_timer = 0
         # Draw everything
         draw_window(win, enemies, towers,enzyme_towers, bullets,selected_tower_type,MONEY,escaped_count,holding_tower,biofilm, ui_level, selected_category,

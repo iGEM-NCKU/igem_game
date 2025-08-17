@@ -20,7 +20,7 @@ class Enemy:
         self.max_Dna_membrane = 0
         self.protein_membrane = 0
         self.max_protein_membrane= 0
-        self.name = "game is gg"
+        self.name = ""
         self.info_range = 50
         self.pic = s_a
     def move(self):

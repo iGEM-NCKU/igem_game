@@ -7,7 +7,7 @@ class Enzyme_Tower():
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.range = 100
+        self.range = 60
         self.size = 20
         self.cooldown = 60 # frames between shots
         self.timer = 0

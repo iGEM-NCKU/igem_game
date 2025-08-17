@@ -182,10 +182,10 @@ def main(win):
             if not alive:
                 if e.check_death() == False:
                     escaped_count += e.damage
+                else:
+                    MONEY += 1
             elif e.check_death() == False:
                 alive_enemies.append(e)
-            else:
-                MONEY += 1
         enemies = alive_enemies
 
 

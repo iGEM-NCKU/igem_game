@@ -21,7 +21,7 @@ def draw_window(win, enemies, towers, enzyme_towers, bullets, selected_tower_typ
             tile.draw(win)
 
     for e in enemies:
-        enemy_messege = f"{e.name}\nPolysac: {e.polysac}/{e.max_polysac}\nDNA Membrane: {e.Dna_membrane}/{e.max_Dna_membrane}\nProtein Membrane: {e.protein_membrane}/{e.max_protein_membrane}"
+        enemy_messege = f"{e.name}\nPolysac: {e.polysac}/{e.max_polysac}\nDNA Membrane: {e.Dna_membrane}/{e.max_Dna_membrane}\nProtein Membrane: {e.protein_membrane}/{e.max_protein_membrane}\nHealth: {e.health}/{e.max_health}"
         e.draw(enemy_messege, win, mx,my)
     for t in towers:
         t.draw(win, mx, my)
@@ -148,11 +148,19 @@ def main(win):
                             row, col = get_tile_index(tile_px, tile_py)
                             tile = map_tiles[row][col]
                             if selected_category == "A" and not tile.is_path():
-                                    placing_tower = tower_class(tile_px, tile_py)
+                                placing_tower = tower_class(tile_px, tile_py)
+                                if MONEY >= placing_tower.cost:
+                                    MONEY -= placing_tower.cost
                                     towers.append(placing_tower)
+                                else:
+                                    placing_tower = None
                             elif selected_category == "B" and not tile.is_path():
-                                    placing_tower = tower_class(tile_px, tile_py)
+                                placing_tower = tower_class(tile_px, tile_py)
+                                if MONEY >= placing_tower.cost:
+                                    MONEY -= placing_tower.cost
                                     enzyme_towers.append(placing_tower)
+                                else:
+                                    placing_tower = None
 
                             holding_tower = None
                             selected_tower_type = None

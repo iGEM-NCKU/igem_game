@@ -11,7 +11,7 @@ class Tower:
         self.range = 150
         self.cooldown = 60 # frames between shots
         self.timer = 0
-        self.cost = 100
+        self.cost = 1 # spend money
         self.duration = 2
         self.durationTimer = self.duration * 60
         self.bullet_class = bullet

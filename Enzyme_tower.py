@@ -11,7 +11,7 @@ class Enzyme_Tower():
         self.size = 20
         self.cooldown = 60 # frames between shots
         self.timer = 0
-        self.cost = 100
+        self.cost = 2 # spend money
         self.duration = 2
         self.durationTimer = self.duration * 60
         self.damage = 30
@@ -55,7 +55,7 @@ class Enzyme_Tower():
 class DNase1(Enzyme_Tower):
     def __init__(self, x, y):
         super().__init__(x, y)
-        self.damage = 20
+        self.damage = 200
         self.cooldown = 108
         self.duration = 20
         self.durationTimer = self.duration * 60
@@ -75,7 +75,7 @@ class DNase1(Enzyme_Tower):
 class Proteinase_K(Enzyme_Tower):
     def __init__(self, x, y):
         super().__init__(x, y)
-        self.damage = 20
+        self.damage = 200
         self.cooldown = 72
         self.duration = 25
         self.durationTimer = self.duration * 60
@@ -95,7 +95,7 @@ class Proteinase_K(Enzyme_Tower):
 class Dispersin_B(Enzyme_Tower):
     def __init__(self, x, y):
         super().__init__(x, y)
-        self.damage = 20
+        self.damage = 200
         self.cooldown = 90
         self.duration = 20
         self.durationTimer = self.duration * 60

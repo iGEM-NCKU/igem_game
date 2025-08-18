@@ -1,6 +1,6 @@
 import pygame
 import math
-from config import RED, GREEN, BLACK, GRAY, YELLOW, WHITE
+from config import RED, GREEN, BLACK, GRAY, YELLOW, WHITE, BLUE
 
 s_a = pygame.transform.scale(pygame.image.load("src/enemy/staphylococcus-aureus.jpg"), (96, 80))
 my = pygame.transform.scale(pygame.image.load("src/enemy/Mycobacterium.jpeg"), (96, 80))
@@ -23,6 +23,9 @@ class Enemy:
         self.name = ""
         self.info_range = 50
         self.pic = s_a
+
+        self.health = 50
+        self.max_health = 50
     def move(self):
         if self.pos_index + 1 >= len(self.path):
             return False  # reached end
@@ -64,7 +67,7 @@ class Enemy:
         pygame.draw.rect(win, BLACK, (mx + 5, my - 25, text.get_width() + 10, text.get_height() + 10), 2)
         win.blit(text, (mx + 10, my - 20))
     def check_death(self):
-        if self.Dna_membrane <= 0 and self.protein_membrane <= 0 and self.polysac <= 0:
+        if self.Dna_membrane <= 0 and self.protein_membrane <= 0 and self.polysac <= 0 and self.health <= 0:
             return True
         return False
 
@@ -79,18 +82,23 @@ class S_aureus(Enemy):
         self.max_protein_membrane = 70
         self.name = "Staphylococcus aureus"
         self.pic = s_a
+        self.health = 50
+        self.max_health = 50
     def draw(self, message, win, mx, my):
         distance = ((mx - self.x) ** 2 + (my - self.y) ** 2) ** 0.5
         pygame.draw.circle(win, BLACK, (int(self.x), int(self.y)), 10)
 
         # polysac bar
         if not self.polysac <= 0:
-            pygame.draw.rect(win, RED, (self.x - 15, self.y - 28, 30, 5))
-            pygame.draw.rect(win, GREEN, (self.x - 15, self.y - 28, 30 * self.polysac / self.max_polysac, 5))
+            pygame.draw.rect(win, RED, (self.x - 15, self.y - 36, 30, 5))
+            pygame.draw.rect(win, BLUE, (self.x - 15, self.y - 36, 30 * self.polysac / self.max_polysac, 5))
         # protein bar
         if not self.protein_membrane <= 0:
-            pygame.draw.rect(win, RED, (self.x - 15, self.y - 20, 30, 5))
-            pygame.draw.rect(win, GRAY, (self.x - 15, self.y - 20, 30 * self.protein_membrane / self.max_protein_membrane, 5))
+            pygame.draw.rect(win, RED, (self.x - 15, self.y - 28, 30, 5))
+            pygame.draw.rect(win, GRAY, (self.x - 15, self.y - 28, 30 * self.protein_membrane / self.max_protein_membrane, 5))
+        #health bar
+        pygame.draw.rect(win, RED, (self.x - 15, self.y - 20, 30, 5))
+        pygame.draw.rect(win, GREEN, (self.x - 15, self.y - 20, 30 * self.health / self.max_health, 5))
         if distance < self.info_range:
             self.draw_info(win, message, mx, my)       
 class Streptococcus(Enemy):
@@ -102,6 +110,8 @@ class Streptococcus(Enemy):
         self.max_polysac = 50
         self.name = "Streptococcus"
         self.pic = strept
+        self.health = 50
+        self.max_health = 50
     def draw(self, message, win, mx, my):
         pygame.draw.circle(win, BLACK, (int(self.x), int(self.y)), 10)
         distance = ((mx - self.x) ** 2 + (my - self.y) ** 2) ** 0.5
@@ -109,8 +119,12 @@ class Streptococcus(Enemy):
             self.draw_info(win, message, mx, my)
         # polysac bar
         if not self.polysac <= 0:
-            pygame.draw.rect(win, RED, (self.x - 15, self.y - 20, 30, 5))
-            pygame.draw.rect(win, GREEN, (self.x - 15, self.y - 20, 30 * self.polysac / self.max_polysac, 5))
+            pygame.draw.rect(win, RED, (self.x - 15, self.y - 28, 30, 5))
+            pygame.draw.rect(win, BLUE, (self.x - 15, self.y - 28, 30 * self.polysac / self.max_polysac, 5))
+        #health bar
+        pygame.draw.rect(win, RED, (self.x - 15, self.y - 20, 30, 5))
+        pygame.draw.rect(win, GREEN, (self.x - 15, self.y - 20, 30 * self.health / self.max_health, 5))
+        
         if distance < self.info_range:
             self.draw_info(win, message, mx, my)
 class E_coli(Enemy):
@@ -124,6 +138,8 @@ class E_coli(Enemy):
         self.max_Dna_membrane = 40
         self.name = "Escherichia coli"
         self.pic = ecoli
+        self.health = 50
+        self.max_health = 50
     def draw(self, message, win, mx, my):
         pygame.draw.circle(win, BLACK, (int(self.x), int(self.y)), 10)
         distance = ((mx - self.x) ** 2 + (my - self.y) ** 2) ** 0.5
@@ -131,12 +147,16 @@ class E_coli(Enemy):
             self.draw_info(win, message, mx, my)
         # dna
         if not self.Dna_membrane <= 0:
-            pygame.draw.rect(win, RED, (self.x - 15, self.y - 28, 30, 5))
-            pygame.draw.rect(win, GRAY, (self.x - 15, self.y - 28, 30 * self.Dna_membrane / self.max_Dna_membrane, 5))
+            pygame.draw.rect(win, RED, (self.x - 15, self.y - 36, 30, 5))
+            pygame.draw.rect(win, GRAY, (self.x - 15, self.y - 36, 30 * self.Dna_membrane / self.max_Dna_membrane, 5))
         # protein bar
         if not self.protein_membrane <= 0:
-            pygame.draw.rect(win, RED, (self.x - 15, self.y - 20, 30, 5))
-            pygame.draw.rect(win, YELLOW, (self.x - 15, self.y - 20, 30 * self.protein_membrane / self.max_protein_membrane, 5))
+            pygame.draw.rect(win, RED, (self.x - 15, self.y - 28, 30, 5))
+            pygame.draw.rect(win, YELLOW, (self.x - 15, self.y - 28, 30 * self.protein_membrane / self.max_protein_membrane, 5))
+        #health bar
+        pygame.draw.rect(win, RED, (self.x - 15, self.y - 20, 30, 5))
+        pygame.draw.rect(win, GREEN, (self.x - 15, self.y - 20, 30 * self.health / self.max_health, 5))
+        
         if distance < self.info_range:
             self.draw_info(win, message, mx, my)
 class P_aeruginosa(Enemy):
@@ -152,6 +172,8 @@ class P_aeruginosa(Enemy):
         self.max_protein_membrane = 70
         self.name = "Pseudomonas aeruginosa"
         self.pic = p_a
+        self.health = 50
+        self.max_health = 50
     def draw(self, message, win, mx, my):
         pygame.draw.circle(win, BLACK, (int(self.x), int(self.y)), 10)
         distance = ((mx - self.x) ** 2 + (my - self.y) ** 2) ** 0.5
@@ -159,16 +181,20 @@ class P_aeruginosa(Enemy):
             self.draw_info(win, message, mx, my)
         # polysac bar
         if not self.polysac <= 0:
-            pygame.draw.rect(win, RED, (self.x - 15, self.y - 36, 30, 5))
-            pygame.draw.rect(win, GREEN, (self.x - 15, self.y - 36, 30 * self.polysac / self.max_polysac, 5))
+            pygame.draw.rect(win, RED, (self.x - 15, self.y - 44, 30, 5))
+            pygame.draw.rect(win, BLUE, (self.x - 15, self.y - 44, 30 * self.polysac / self.max_polysac, 5))
         # dna
         if not self.Dna_membrane <= 0:
-            pygame.draw.rect(win, RED, (self.x - 15, self.y - 28, 30, 5))
-            pygame.draw.rect(win, GRAY, (self.x - 15, self.y - 28, 30 * self.Dna_membrane / self.max_Dna_membrane, 5))
+            pygame.draw.rect(win, RED, (self.x - 15, self.y - 36, 30, 5))
+            pygame.draw.rect(win, GRAY, (self.x - 15, self.y - 36, 30 * self.Dna_membrane / self.max_Dna_membrane, 5))
         # protein bar
         if not self.protein_membrane <= 0:
-            pygame.draw.rect(win, RED, (self.x - 15, self.y - 20, 30, 5))
-            pygame.draw.rect(win, YELLOW, (self.x - 15, self.y - 20, 30 * self.protein_membrane / self.max_protein_membrane, 5))
+            pygame.draw.rect(win, RED, (self.x - 15, self.y - 28, 30, 5))
+            pygame.draw.rect(win, YELLOW, (self.x - 15, self.y - 28, 30 * self.protein_membrane / self.max_protein_membrane, 5))
+        #health bar
+        pygame.draw.rect(win, RED, (self.x - 15, self.y - 20, 30, 5))
+        pygame.draw.rect(win, GREEN, (self.x - 15, self.y - 20, 30 * self.health / self.max_health, 5))
+        
         if distance < self.info_range:
             self.draw_info(win, message, mx, my)
 class Mycobacterium(Enemy):
@@ -182,17 +208,23 @@ class Mycobacterium(Enemy):
         self.max_protein_membrane = 80
         self.name = "Mycobacterium"
         self.pic = my
+        self.health = 50
+        self.max_health = 50
     def draw(self, message, win, mx, my):
         pygame.draw.circle(win, BLACK, (int(self.x), int(self.y)), 10)
         distance = ((mx - self.x) ** 2 + (my - self.y) ** 2) ** 0.5
         if distance < self.info_range:
             self.draw_info(win, message, mx, my)
         # polysac bar
-        pygame.draw.rect(win, RED, (self.x - 15, self.y - 28, 30, 5))
-        pygame.draw.rect(win, GREEN, (self.x - 15, self.y - 28, 30 * self.polysac / self.max_polysac, 5))
+        pygame.draw.rect(win, RED, (self.x - 15, self.y - 36, 30, 5))
+        pygame.draw.rect(win, BLUE, (self.x - 15, self.y - 36, 30 * self.polysac / self.max_polysac, 5))
         # protein bar
+        pygame.draw.rect(win, RED, (self.x - 15, self.y - 28, 30, 5))
+        pygame.draw.rect(win, YELLOW, (self.x - 15, self.y - 28, 30 * self.protein_membrane / self.max_protein_membrane, 5))
+        #health bar
         pygame.draw.rect(win, RED, (self.x - 15, self.y - 20, 30, 5))
-        pygame.draw.rect(win, YELLOW, (self.x - 15, self.y - 20, 30 * self.protein_membrane / self.max_protein_membrane, 5))
+        pygame.draw.rect(win, GREEN, (self.x - 15, self.y - 20, 30 * self.health / self.max_health, 5))
+        
         if distance < self.info_range:
             self.draw_info(win, message, mx, my)
 ENEMY_TYPE = [S_aureus, Streptococcus, E_coli, P_aeruginosa, Mycobacterium]

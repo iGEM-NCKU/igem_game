@@ -13,12 +13,13 @@ class Bullet:
     def move(self):
         dx, dy = self.target.x - self.x, self.target.y - self.y
         dist = math.hypot(dx, dy)
-        if dist < self.speed or self.target.Dna_membrane <= 0 and self.target.protein_membrane <= 0 and self.target.polysac <= 0 and self.target.health <= 0:
-            if self.target.Dna_membrane > 0 or self.target.protein_membrane > 0 or self.target.polysac > 0:
-                return False
-            if self.target.health:
-                self.target.health -= self.damage
-            
+        if dist < self.speed or self.target.Dna_membrane <= 0 and self.target.protein_membrane <= 0 and self.target.polysac <= 0:
+            if self.target.polysac > 0:
+                self.target.polysac -= self.damage
+            elif self.target.Dna_membrane > 0:
+                self.target.Dna_membrane -= self.damage
+            elif self.target.protein_membrane > 0:
+                self.target.protein_membrane -= self.damage
             return False  # bullet disappears
         self.x += dx / dist * self.speed
         self.y += dy / dist * self.speed

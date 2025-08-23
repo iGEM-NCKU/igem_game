@@ -21,7 +21,7 @@ def draw_window(win, enemies, towers, enzyme_towers, bullets, selected_tower_typ
             tile.draw(win)
 
     for e in enemies:
-        enemy_messege = f"{e.name}\nPolysac: {e.polysac}/{e.max_polysac}\nDNA Membrane: {e.Dna_membrane}/{e.max_Dna_membrane}\nProtein Membrane: {e.protein_membrane}/{e.max_protein_membrane}\nHealth: {e.health}/{e.max_health}"
+        enemy_messege = f"{e.name}\nPolysac: {e.polysac}/{e.max_polysac}\nDNA Membrane: {e.Dna_membrane}/{e.max_Dna_membrane}\nProtein Membrane: {e.protein_membrane}/{e.max_protein_membrane}"
         e.draw(enemy_messege, win, mx,my)
     for t in towers:
         t.draw(win, mx, my)
@@ -54,7 +54,7 @@ def main(win):
     map_tiles = [[Tile(col, row, map_data[row][col]) for col in range(TILE_MAP_WIDTH)] for row in range(TILE_MAP_HEIGHT)]
 
     #money
-    MONEY = 100
+    MONEY = 300
 
     #escaped
     escaped_count = 0
@@ -148,19 +148,19 @@ def main(win):
                             row, col = get_tile_index(tile_px, tile_py)
                             tile = map_tiles[row][col]
                             if selected_category == "A" and not tile.is_path():
-                                placing_tower = tower_class(tile_px, tile_py)
-                                if MONEY >= placing_tower.cost:
-                                    MONEY -= placing_tower.cost
+                                # 創建一個臨時tower來檢查成本
+                                temp_tower = tower_class(0, 0)
+                                if MONEY >= temp_tower.cost:
+                                    MONEY -= temp_tower.cost
+                                    placing_tower = tower_class(tile_px, tile_py)
                                     towers.append(placing_tower)
-                                else:
-                                    placing_tower = None
                             elif selected_category == "B" and not tile.is_path():
-                                placing_tower = tower_class(tile_px, tile_py)
-                                if MONEY >= placing_tower.cost:
-                                    MONEY -= placing_tower.cost
+                                # 創建一個臨時tower來檢查成本
+                                temp_tower = tower_class(0, 0)
+                                if MONEY >= temp_tower.cost:
+                                    MONEY -= temp_tower.cost
+                                    placing_tower = tower_class(tile_px, tile_py)
                                     enzyme_towers.append(placing_tower)
-                                else:
-                                    placing_tower = None
 
                             holding_tower = None
                             selected_tower_type = None
@@ -191,7 +191,7 @@ def main(win):
                 if e.check_death() == False:
                     escaped_count += e.damage
                 else:
-                    MONEY += 1
+                    MONEY += 5
             elif e.check_death() == False:
                 alive_enemies.append(e)
         enemies = alive_enemies
